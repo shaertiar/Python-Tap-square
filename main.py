@@ -177,7 +177,7 @@ while is_app:
                 target.update()
 
                 # Вырубание игры если время мишени истекло
-                if target.timer <= 0:
+                if target.timer <= 0 and is_round:
                     is_round = False
                     player.points -= 1
 
