@@ -140,6 +140,17 @@ while is_app:
             # Цикл раунда
             is_round = True
             while is_round:
+                # Закрашишивание окна
+                window.fill((0, 0, 0))
+
+                # Отрисовка количества очков
+                score = my_font.render(str(player.points), False, (255, 255, 255))
+                window.blit(score, ((ww-score.get_width())/2, 0))
+
+                # Обновление и отрисвка мишени
+                target.draw()
+                target.update()
+                
                 # Обработка событий
                 for event in pg.event.get():
                     # Обработка выхода из игры
@@ -164,17 +175,6 @@ while is_app:
                                 player.points -= 1
 
                             is_round = False
-
-                # Закрашишивание окна
-                window.fill((0, 0, 0))
-
-                # Отрисовка количества очков
-                score = my_font.render(str(player.points), False, (255, 255, 255))
-                window.blit(score, ((ww-score.get_width())/2, 0))
-
-                # Обновление и отрисвка мишени
-                target.draw()
-                target.update()
 
                 # Вырубание игры если время мишени истекло
                 if target.timer <= 0 and is_round:
