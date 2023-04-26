@@ -5,13 +5,6 @@ import time
 # Иниацилизация 
 pg.init()
 
-# Класс игрока
-class Player:
-    # Конструктор
-    def __init__(self):
-        self.points = 0
-
-# Класс мишени
 class Target:
     # Конструктор
     def __init__(self, pos:tuple, size:tuple, color:tuple, timer:float):
@@ -110,26 +103,21 @@ while is_app:
             if event.button == 1:
                 if button_easy_rect.collidepoint(event.pos):
                     game_mode = 1
+                    target_size = 50
+                    target_timer = 2
                 elif button_medium_rect.collidepoint(event.pos):
                     game_mode = 2
+                    target_size = 30
+                    target_timer = 1.5
                 elif button_hard_rect.collidepoint(event.pos):
                     game_mode = 3
+                    target_size = 15
+                    target_timer = 1
 
     # Начало игры
     if game_mode != 0: 
         # Создание игрока
-        player = Player()
-
-        # Настройки мишени
-        if game_mode == 1:
-            target_size = 50
-            target_timer = 2
-        elif game_mode == 2:
-            target_size = 30
-            target_timer = 1.5
-        elif game_mode == 3:
-            target_size = 15
-            target_timer = 1
+        player_score = 0
 
         # Игрвой цикл
         is_game = True
@@ -144,7 +132,7 @@ while is_app:
                 window.fill((0, 0, 0))
 
                 # Отрисовка количества очков
-                score = my_font.render(str(player.points), False, (255, 255, 255))
+                score = my_font.render(str(player_score), False, (255, 255, 255))
                 window.blit(score, ((ww-score.get_width())/2, 0))
 
                 # Обновление и отрисвка мишени
@@ -168,18 +156,18 @@ while is_app:
 
                     # Обработка нажатий мышки
                     elif event.type == pg.MOUSEBUTTONDOWN:
-                        if event.button == 1 or event.button == 2:
+                        if event.button == 1 or event.button == 3:
                             if target.rect.collidepoint(event.pos):
-                                player.points += 1
+                                player_score += 1
                             else:
-                                player.points -= 1
+                                player_score -= 1
 
                             is_round = False
 
                 # Вырубание игры если время мишени истекло
                 if target.timer <= 0 and is_round:
                     is_round = False
-                    player.points -= 1
+                    player_score -= 1
 
                 # Обновление окна
                 pg.display.update()
