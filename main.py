@@ -40,13 +40,13 @@ clock = pg.time.Clock()
 # Создание шрифта
 my_font = pg.font.SysFont('arial', 50)
 
-# Настройки окна
-ww, wh = 1280, 720
-fps = 10
-
 # Создание окна
-window = pg.display.set_mode((ww, wh))
+window = pg.display.set_mode()
 pg.display.set_caption('Попади в квадрат!')
+
+# Настройки окна
+ww, wh = window.get_width(), window.get_height()
+fps = 10
 
 # Цикл приложения
 is_app = True
@@ -103,15 +103,15 @@ while is_app:
             if event.button == 1:
                 if button_easy_rect.collidepoint(event.pos):
                     game_mode = 1
-                    target_size = 50
+                    target_size = int(ww * 30 / 1280)
                     target_timer = 2
                 elif button_medium_rect.collidepoint(event.pos):
                     game_mode = 2
-                    target_size = 30
+                    target_size = int(ww * 20 / 1280)
                     target_timer = 1.5
                 elif button_hard_rect.collidepoint(event.pos):
                     game_mode = 3
-                    target_size = 15
+                    target_size = int(ww * 10 / 1280)
                     target_timer = 1
 
     # Начало игры
@@ -134,6 +134,10 @@ while is_app:
                 # Отрисовка количества очков
                 score = my_font.render(str(player_score), False, (255, 255, 255))
                 window.blit(score, ((ww-score.get_width())/2, 0))
+
+                # Отрисовка оставлегося времени
+                left_time = my_font.render(str(round(target.timer, 1)), False, (255, 255, 255))
+                window.blit(left_time, ((ww-left_time.get_width())/2, wh-left_time.get_height()))
 
                 # Обновление и отрисвка мишени
                 target.draw()
