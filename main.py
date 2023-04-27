@@ -87,14 +87,34 @@ while is_app:
     button_hard_rect.x = (WW - button_hard_rect.width)/2
     button_hard_rect.y = WH / 5 * 4 - button_hard_rect.height / 2
 
+    # Текст с цветами мишени
+    r = my_font.render(f'R: {target_color[0]}', False, (255, 150, 150))
+    r_rect = r.get_rect()
+    r_rect.x = WW * 81 / 100
+    r_rect.y = WH / 10 * 4
+
+    g = my_font.render(f'G: {target_color[1]}', False, (150, 255, 150))
+    g_rect = g.get_rect()
+    g_rect.x = WW * 81 / 100
+    g_rect.y = WH / 10 * 5
+
+    b = my_font.render(f'B: {target_color[2]}', False, (150, 150, 255))
+    b_rect = b.get_rect()
+    b_rect.x = WW * 81 / 100
+    b_rect.y = WH / 10 * 6
+
+    # Отоброжение цвета кубика
+    target_color_rect = pg.rect.Rect(WW * 7 / 10, WH * 9 / 20, WW/10, WH/10)
+    pg.draw.rect(window, target_color, target_color_rect)
+
     # Отоброжение текста и кнопак
     window.blit(text, text_rect)
     window.blit(button_easy, button_easy_rect)
     window.blit(button_medium, button_medium_rect)
     window.blit(button_hard, button_hard_rect)
-
-    # Отоброжение цвета кубика
-    pg.draw.rect(window, target_color, (WW/4*3-WW/20, WH/2-WH/20, WW/10, WH/10))
+    window.blit(r, r_rect)
+    window.blit(g, g_rect)
+    window.blit(b, b_rect)
 
     # Обработка событий
     for event in pg.event.get():
