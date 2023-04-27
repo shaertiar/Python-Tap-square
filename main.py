@@ -5,14 +5,22 @@ import time
 # Иниацилизация 
 pg.init()
 
+# Создание окна
+window = pg.display.set_mode()
+pg.display.set_caption('Попади в квадрат!')
+
+# Настройки окна
+WW, WH = window.get_width(), window.get_height()
+FPS = 10
+
 class Target:
     # Конструктор
-    def __init__(self, pos:tuple, size:tuple, color:tuple, timer:float):
-        self.rect = pg.rect.Rect(pos[0], pos[1], size[0], size[1])
+    def __init__(self, pos:tuple, size:int, color:tuple, timer:float):
+        self.rect = pg.rect.Rect(pos[0], pos[1], size, size)
         self.color = color
         self.timer = timer
         self.is_alive = True
-        self.font = pg.font.SysFont('arial', 16)
+        self.font = pg.font.SysFont('arial', int((size-size*0.75) * WW / 1280))
 
     # Функция обновленя
     def update(self):
@@ -38,15 +46,13 @@ class Target:
 clock = pg.time.Clock()
 
 # Создание шрифта
-my_font = pg.font.SysFont('arial', 50)
+my_font = pg.font.SysFont('arial', int(50 * WW / 1280))
 
-# Создание окна
-window = pg.display.set_mode()
-pg.display.set_caption('Попади в квадрат!')
+# Переменная с цветом мишени
+target_color = [255, 255, 0]
 
-# Настройки окна
-ww, wh = window.get_width(), window.get_height()
-fps = 10
+# Переменная с выбранным режимом изменения цвета мишени
+target_change_color = 0
 
 # Цикл приложения
 is_app = True
@@ -60,32 +66,35 @@ while is_app:
     # Создание заглавка
     text = my_font.render('Выберите сложность игры', False, (255, 255, 255), (50, 50, 50))
     text_rect = text.get_rect()
-    text_rect.x = (ww - text_rect.width)/2
-    text_rect.y = wh / 5 - text_rect.height/2
+    text_rect.x = (WW - text_rect.width)/2
+    text_rect.y = WH / 5 - text_rect.height/2
 
     # Создание кнопки легкого уровня сложности 
     button_easy = my_font.render('Легкий', False, (255, 255, 255), (100, 100, 100))
     button_easy_rect = button_easy.get_rect()
-    button_easy_rect.x = (ww - button_easy_rect.width)/2
-    button_easy_rect.y = wh / 5 * 2 - button_easy_rect.height / 2
+    button_easy_rect.x = (WW - button_easy_rect.width)/2
+    button_easy_rect.y = WH / 5 * 2 - button_easy_rect.height / 2
     
     # Создание кнопки легкого уровня сложности 
     button_medium = my_font.render('Средний', False, (255, 255, 255), (100, 100, 100))
     button_medium_rect = button_medium.get_rect()
-    button_medium_rect.x = (ww - button_medium_rect.width)/2
-    button_medium_rect.y = wh / 5 * 3  - button_medium_rect.height / 2
+    button_medium_rect.x = (WW - button_medium_rect.width)/2
+    button_medium_rect.y = WH / 5 * 3  - button_medium_rect.height / 2
     
     # Создание кнопки легкого уровня сложности 
     button_hard = my_font.render('Сложный', False, (255, 255, 255), (100, 100, 100))
     button_hard_rect = button_hard.get_rect()
-    button_hard_rect.x = (ww - button_hard_rect.width)/2
-    button_hard_rect.y = wh / 5 * 4 - button_hard_rect.height / 2
+    button_hard_rect.x = (WW - button_hard_rect.width)/2
+    button_hard_rect.y = WH / 5 * 4 - button_hard_rect.height / 2
 
     # Отоброжение текста и кнопак
     window.blit(text, text_rect)
     window.blit(button_easy, button_easy_rect)
     window.blit(button_medium, button_medium_rect)
     window.blit(button_hard, button_hard_rect)
+
+    # Отоброжение цвета кубика
+    pg.draw.rect(window, target_color, (WW/4*3-WW/20, WH/2-WH/20, WW/10, WH/10))
 
     # Обработка событий
     for event in pg.event.get():
@@ -103,16 +112,45 @@ while is_app:
             if event.button == 1:
                 if button_easy_rect.collidepoint(event.pos):
                     game_mode = 1
-                    target_size = int(ww * 30 / 1280)
+                    target_size = int(WW * 30 / 1280)
                     target_timer = 2
                 elif button_medium_rect.collidepoint(event.pos):
                     game_mode = 2
-                    target_size = int(ww * 20 / 1280)
+                    target_size = int(WW * 20 / 1280)
                     target_timer = 1.5
                 elif button_hard_rect.collidepoint(event.pos):
                     game_mode = 3
-                    target_size = int(ww * 10 / 1280)
+                    target_size = int(WW * 10 / 1280)
                     target_timer = 1
+
+    # Обработка нажатых клавиш
+    keys = pg.key.get_pressed()
+
+    if keys[pg.K_r]:
+        target_change_color = 0
+    elif keys[pg.K_g]:
+        target_change_color = 1
+    elif keys[pg.K_b]:
+        target_change_color = 2
+
+    elif keys[pg.K_UP]:
+        if target_color[target_change_color] <= 250:
+            target_color[target_change_color] += 5
+
+    elif keys[pg.K_DOWN]:
+        if target_color[target_change_color] >= 5:
+            target_color[target_change_color] -= 5
+
+    elif keys[pg.K_1]:
+        target_color = [255, 0, 0]
+    elif keys[pg.K_2]:
+        target_color = [0, 255, 0]
+    elif keys[pg.K_3]:
+        target_color = [0, 0, 255]
+    elif keys[pg.K_4]:
+        target_color = [255, 255, 0]
+    elif keys[pg.K_5]:
+        target_color = [255, 255, 255]
 
     # Начало игры
     if game_mode != 0: 
@@ -123,7 +161,7 @@ while is_app:
         is_game = True
         while is_game:
             # Создание мишени
-            target = Target((random.randint(0, ww-target_size), random.randint(0, wh-target_size)), (target_size, target_size), (255, 255, 0), target_timer)
+            target = Target((random.randint(0, WW-target_size), random.randint(0, WH-target_size)), target_size, target_color, target_timer)
 
             # Цикл раунда
             is_round = True
@@ -133,11 +171,11 @@ while is_app:
 
                 # Отрисовка количества очков
                 score = my_font.render(str(player_score), False, (255, 255, 255))
-                window.blit(score, ((ww-score.get_width())/2, 0))
+                window.blit(score, ((WW-score.get_width())/2, 0))
 
                 # Отрисовка оставлегося времени
                 left_time = my_font.render(str(round(target.timer, 1)), False, (255, 255, 255))
-                window.blit(left_time, ((ww-left_time.get_width())/2, wh-left_time.get_height()))
+                window.blit(left_time, ((WW-left_time.get_width())/2, WH-left_time.get_height()))
 
                 # Обновление и отрисвка мишени
                 target.draw()
@@ -175,8 +213,8 @@ while is_app:
 
                 # Обновление окна
                 pg.display.update()
-                clock.tick(fps)
+                clock.tick(FPS)
 
     # Обновление окна
     pg.display.update()
-    clock.tick(fps)
+    clock.tick(FPS)
